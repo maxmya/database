@@ -3,14 +3,17 @@ package com.example.ahmed.myapplication;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataBaseHelperUser  extends SQLiteOpenHelper {
+public class DataBaseHelperUser extends SQLiteOpenHelper {
+
     private static final int DATABASE_VERSION = 1;
 
     // Database Name
@@ -18,6 +21,8 @@ public class DataBaseHelperUser  extends SQLiteOpenHelper {
 
     // User table name
     private static final String TABLE_USER = "user";
+    private static final String TAG = DataBaseHelperUser.class.getSimpleName();
+
 
     // User Table Columns names
     private static final String COLUMN_USER_ID = "user_id";
@@ -30,23 +35,28 @@ public class DataBaseHelperUser  extends SQLiteOpenHelper {
     // create table sql query
     private String CREATE_USER_TABLE = "CREATE TABLE " + TABLE_USER + "("
             + COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_USER_NAME + " TEXT,"
-            + COLUMN_USER_EMAIL + " TEXT,"+ COLUMN_USER_phoneNumber + " TEXT,"
+            + COLUMN_USER_EMAIL + " TEXT," + COLUMN_USER_phoneNumber + " TEXT,"
             + COLUMN_USER_gender + " TEXT," + COLUMN_USER_PASSWORD + " TEXT" + ")";
 
 
-   //////////
+    //////////
     private String DROP_USER_TABLE = "DROP TABLE IF EXISTS " + TABLE_USER;
-  ///////////////
-    public DataBaseHelperUser(Context context) {
+
+    ///////////////
+    public DataBaseHelperUser(Context context) throws SQLException {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        Log.i(TAG, "instance done ");
     }
-   ////////////
+
+    ////////////
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase db) throws SQLException {
         db.execSQL(CREATE_USER_TABLE);
+        Log.i(TAG, "data base created ");
 
     }
-//////////////////
+
+    //////////////////
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
@@ -58,7 +68,7 @@ public class DataBaseHelperUser  extends SQLiteOpenHelper {
 
     }
 
-    public void addUser(User user) {
+    public void addUser(User user) throws SQLException {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
@@ -72,6 +82,8 @@ public class DataBaseHelperUser  extends SQLiteOpenHelper {
         db.insert(TABLE_USER, null, values);
         db.close();
     }
+
+
     public List<User> getAllUser() {
         // array of columns to fetch
         String[] columns = {
@@ -124,6 +136,7 @@ public class DataBaseHelperUser  extends SQLiteOpenHelper {
         // return user list
         return userList;
     }
+
     public void updateUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -139,6 +152,7 @@ public class DataBaseHelperUser  extends SQLiteOpenHelper {
                 new String[]{String.valueOf(user.getId())});
         db.close();
     }
+
     public void deleteUser(User user) {
         SQLiteDatabase db = this.getWritableDatabase();
         // delete user record by id
@@ -146,7 +160,8 @@ public class DataBaseHelperUser  extends SQLiteOpenHelper {
                 new String[]{String.valueOf(user.getId())});
         db.close();
     }
-    public boolean checkUser(String email) {
+
+    public boolean checkUser(String email) throws SQLException {
 
         // array of columns to fetch
         String[] columns = {
@@ -154,6 +169,8 @@ public class DataBaseHelperUser  extends SQLiteOpenHelper {
         };
         SQLiteDatabase db = this.getReadableDatabase();
 
+
+        Log.i(TAG, "babababa");
         // selection criteria
         String selection = COLUMN_USER_EMAIL + " = ?";
 
@@ -183,7 +200,8 @@ public class DataBaseHelperUser  extends SQLiteOpenHelper {
 
         return false;
     }
-    public boolean checkUser(String email, String password) {
+
+    public boolean checkUser(String email, String password) throws SQLException {
 
         // array of columns to fetch
         String[] columns = {
